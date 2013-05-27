@@ -1,0 +1,40 @@
+/**
+ *  Dim When I'm Here
+ *
+ *  Author: Emerson Garland
+ *
+ *  Date: 05/26/2013
+ */
+preferences {
+	section("When this person arrives"){
+		input "presence1", "capability.presenceSensor", title: "Who?"
+	}
+	section("Turn on light(s)"){
+		input "MultilevelSwitch", "capability.switchLevel", multiple: true
+	}
+	section("Set brightness"){
+    	        input "number", "number", title: "Percentage, 0-99"
+    }
+}
+
+def installed()
+{
+	subscribe(presence1, "presence", presenceHandler)
+}
+
+def updated()
+{
+	unsubscribe()
+	subscribe(presence1, "presence", presenceHandler)
+}
+
+def presenceHandler(evt)
+{
+	def current = evt.value
+	if (current == "present") {
+		settings.MultilevelSwitch.setLevel(number)
+	}
+	else if (current == "not present") {
+		settings.MultilevelSwitch.off()
+	}
+}
